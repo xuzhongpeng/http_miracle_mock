@@ -1,7 +1,10 @@
-[中文](README_CN.md)|英文
+[简体中文](README_ZH.md) | English
+
+
+[![Pub](https://img.shields.io/pub/v/http_miracle_mock.svg)](https://pub.dev/packages/http_miracle_mock)
+[![LICENSE](https://img.shields.io/badge/License-MIT-red.svg)](https://pub.dev/packages/http_miracle_mock#License "Project's LICENSE section")
 
 # http_miracle_mock
-  [![Pub](https://img.shields.io/pub/v/http_miracle_mock.svg?label=dev&include_prereleases)](https://pub.dev/packages/http_miracle_mock)
 
 Designed for Flutter unit testing, this library allows for easy mocking/intercepting of network requests and images within business logic.
 
@@ -9,6 +12,7 @@ Intercepting network requests in unit tests of Flutter projects is a common scen
 
 - [mockito](https://pub.dev/packages/mockito): Not concise enough, requiring a large amount of code.
 - [http_mock_adapter](https://pub.dev/packages/http_mock_adapter): Only supports the Dio library. 
+- [network_image_mock](https://pub.dev/packages/network_image_mock): Only supports image.
 
 The purpose of this library is to solve the following problems:
 
@@ -22,7 +26,7 @@ The purpose of this library is to solve the following problems:
 
 ```yaml
 dev_dependencies:
-  http_miracle_mock: ^0.0.1
+  http_miracle_mock: any
 ```
 
 ### Simple Usage
@@ -32,6 +36,7 @@ Mocking a GET request:
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   final HttpMiracleMock httpMiracleMock = HttpMiracleMock();
+  final httpClient = HttpClient();
   test('test getUrl', () async {
       var url = 'https://example.com/create';
       var data = "resultGetUrl";
@@ -43,6 +48,35 @@ void main() async {
       expect(responseData, data);
     });
 }
+```
+
+Mocking a image:
+
+```dart
+testWidgets('test image using url png', (WidgetTester tester) async {
+  var data = File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
+  var url = 'http://example.com/image.png';
+  httpMiracleMock.open(url).reply(data.readAsBytesSync());
+  await Utils.pumpWidgetWithImages(
+    tester,
+    Column(
+      children: [
+        Container(
+            child: Image.network(
+          url,
+          width: 100,
+          height: 100,
+        )),
+      ],
+    ),
+    [NetworkImage(url)],
+  );
+  await tester.pumpAndSettle();
+  await expectLater(
+    find.byType(Column),
+    matchesGoldenFile('snapshots/net_work_image_1.png'),
+  );
+});
 ```
 
 First, initialize the `HttpMiracleMock`, then use `httpMiracleMock.open` to provide the information needed to intercept the network request, such as request URL and parameters, and then use `reply` to enter the result of the request.

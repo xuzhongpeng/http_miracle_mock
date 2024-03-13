@@ -52,11 +52,11 @@ class HttpMiracleMock {
   ) {
     Map<Compatibility, List<ResponseData>> allMatches = {};
     for (var value in _mockData.reversed) {
-      Compatibility _matchData = value._matcher(url, method, data, headers);
-      if (_matchData == Compatibility.perfect) {
+      Compatibility matchData = value._matcher(url, method, data, headers);
+      if (matchData == Compatibility.perfect) {
         return value;
-      } else if (_matchData != Compatibility.no) {
-        (allMatches[_matchData] ??= []).add(value);
+      } else if (matchData != Compatibility.no) {
+        (allMatches[matchData] ??= []).add(value);
       }
     }
     for (var compatibility in [
@@ -69,6 +69,7 @@ class HttpMiracleMock {
         return allMatches[compatibility]!.first;
       }
     }
+    return null;
   }
 }
 
@@ -80,7 +81,7 @@ enum Compatibility {
   no, // 未匹配成功
 }
 
-typedef dynamic DataTransform(dynamic data);
+typedef DataTransform = dynamic Function(dynamic data);
 
 class ResponseData {
   // 以下是request数据
@@ -112,21 +113,21 @@ class ResponseData {
 
   Compatibility _matcher(
       Uri requestUrl, String? method, dynamic data, HttpHeaders? headers) {
-    Compatibility _urlMatcher = _matchUrl(requestUrl);
-    Compatibility _methodMatcher = _matchMethod(method);
-    Compatibility _dataMatcher = _matchData(data, headers);
-    if ([_urlMatcher, _methodMatcher, _dataMatcher]
+    Compatibility urlMatcher = _matchUrl(requestUrl);
+    Compatibility methodMatcher = _matchMethod(method);
+    Compatibility dataMatcher = _matchData(data, headers);
+    if ([urlMatcher, methodMatcher, dataMatcher]
         .contains(Compatibility.no)) {
       return Compatibility.no;
-    } else if (_urlMatcher == Compatibility.good &&
-        _methodMatcher == Compatibility.good &&
-        _dataMatcher == Compatibility.good) {
+    } else if (urlMatcher == Compatibility.good &&
+        methodMatcher == Compatibility.good &&
+        dataMatcher == Compatibility.good) {
       return Compatibility.perfect;
-    } else if (_urlMatcher == Compatibility.good &&
-        (_methodMatcher == Compatibility.good ||
-            _dataMatcher == Compatibility.good)) {
+    } else if (urlMatcher == Compatibility.good &&
+        (methodMatcher == Compatibility.good ||
+            dataMatcher == Compatibility.good)) {
       return Compatibility.fine;
-    } else if (_urlMatcher == Compatibility.good) {
+    } else if (urlMatcher == Compatibility.good) {
       return Compatibility.good;
     } else {
       return Compatibility.ok;
@@ -322,7 +323,7 @@ class _HttpOverrides extends HttpOverrides {
           List<int> responseBody;
           var body = _responseData._body;
           if (body == null) {
-            responseBody = Utf8Encoder().convert('');
+            responseBody = const Utf8Encoder().convert('');
           } else if (body is String) {
             if (_responseData.headers.isEmpty) {
               try {
@@ -331,13 +332,14 @@ class _HttpOverrides extends HttpOverrides {
                   _responseData.headers.set(
                       HttpHeaders.contentTypeHeader, ContentType.json.value);
                 }
+              // ignore: empty_catches
               } catch (e) {}
             }
-            responseBody = Utf8Encoder().convert(body);
+            responseBody = const Utf8Encoder().convert(body);
           }
           // 转换参数
           else if (body is Map) {
-            responseBody = Utf8Encoder().convert(json.encode(body));
+            responseBody = const Utf8Encoder().convert(json.encode(body));
             if (_responseData.headers.isEmpty) {
               _responseData.headers
                   .set(HttpHeaders.contentTypeHeader, ContentType.json.value);
@@ -474,6 +476,7 @@ class _MockHttpClientResponse extends MockHttpClientResponse {
 
   /// 兼容http库
   @override
+  // ignore: use_function_type_syntax_for_parameters
   Stream<List<int>> handleError(Function? onError, {bool test(error)?}) {
     return this;
   }

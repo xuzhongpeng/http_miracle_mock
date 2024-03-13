@@ -1,4 +1,7 @@
-中文 | [英文](README.md)
+简体中文 | [English](README.md)
+
+[![Pub](https://img.shields.io/pub/v/http_miracle_mock.svg)](https://pub.dev/packages/http_miracle_mock)
+[![LICENSE](https://img.shields.io/badge/License-MIT-red.svg)](https://pub.dev/packages/http_miracle_mock#License "Project's LICENSE section")
 
 # http_miracle_mock
 
@@ -8,6 +11,7 @@ Flutter项目的单元测试中拦截业务中的网络请求是一个很常见�
 
 - [mockito](https://pub.dev/packages/mockito): 不够简洁，需要大量代码
 - [http_mock_adapter](https://pub.dev/packages/http_mock_adapter): 仅支持Dio库
+- [network_image_mock](https://pub.dev/packages/network_image_mock): 仅支持图片
 
 此库的目的为了解决以下问题
 
@@ -32,6 +36,7 @@ dev_dependencies:
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   final HttpMiracleMock httpMiracleMock = HttpMiracleMock();
+  final httpClient = HttpClient();
   test('test getUrl', () async {
       var url = 'https://example.com/create';
       var data = "resultGetUrl";
@@ -43,6 +48,34 @@ void main() async {
       expect(responseData, data);
     });
 }
+```
+
+模拟一个图片
+```dart
+testWidgets('test image using url png', (WidgetTester tester) async {
+  var data = File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
+  var url = 'http://example.com/image.png';
+  httpMiracleMock.open(url).reply(data.readAsBytesSync());
+  await Utils.pumpWidgetWithImages(
+    tester,
+    Column(
+      children: [
+        Container(
+            child: Image.network(
+          url,
+          width: 100,
+          height: 100,
+        )),
+      ],
+    ),
+    [NetworkImage(url)],
+  );
+  await tester.pumpAndSettle();
+  await expectLater(
+    find.byType(Column),
+    matchesGoldenFile('snapshots/net_work_image_1.png'),
+  );
+});
 ```
 
 首先，初始化一下`HttpMiracleMock`，然后使用`httpMiracleMock.open`来提供需要拦截的网络请求的信息如请求链接、请求参数等，然后通过`reply`填入该请求的返回结果。
