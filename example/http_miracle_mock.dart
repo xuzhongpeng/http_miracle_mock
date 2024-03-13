@@ -10,7 +10,7 @@ void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   final HttpMiracleMock httpMiracleMock = HttpMiracleMock();
   final httpClient = HttpClient();
-  
+
   test('test getUrl', () async {
     var url = 'https://example.com/create';
     var data = "resultGetUrl";

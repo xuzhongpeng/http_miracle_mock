@@ -1,6 +1,6 @@
 name: http_miracle_mock
 description: Designed for Flutter unit testing, this library allows for easy mocking/intercepting of network requests and images within business logic.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/xuzhongpeng/http_miracle_mock
 repository: https://github.com/xuzhongpeng/http_miracle_mock
 topics:

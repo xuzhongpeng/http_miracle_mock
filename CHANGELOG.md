@@ -9,3 +9,7 @@ Change the warning code.
 ## 0.0.3
 
 Pass static analysis
+
+## 0.0.4
+
+Perf dart code format

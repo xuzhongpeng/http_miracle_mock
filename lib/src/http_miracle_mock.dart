@@ -116,8 +116,7 @@ class ResponseData {
     Compatibility urlMatcher = _matchUrl(requestUrl);
     Compatibility methodMatcher = _matchMethod(method);
     Compatibility dataMatcher = _matchData(data, headers);
-    if ([urlMatcher, methodMatcher, dataMatcher]
-        .contains(Compatibility.no)) {
+    if ([urlMatcher, methodMatcher, dataMatcher].contains(Compatibility.no)) {
       return Compatibility.no;
     } else if (urlMatcher == Compatibility.good &&
         methodMatcher == Compatibility.good &&
@@ -332,7 +331,7 @@ class _HttpOverrides extends HttpOverrides {
                   _responseData.headers.set(
                       HttpHeaders.contentTypeHeader, ContentType.json.value);
                 }
-              // ignore: empty_catches
+                // ignore: empty_catches
               } catch (e) {}
             }
             responseBody = const Utf8Encoder().convert(body);

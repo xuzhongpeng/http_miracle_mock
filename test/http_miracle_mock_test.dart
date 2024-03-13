@@ -14,7 +14,8 @@ void main() async {
   final HttpMiracleMock httpMiracleMock = HttpMiracleMock();
   group('test image', () {
     testWidgets('test image using url png', (WidgetTester tester) async {
-      var data = File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
+      var data =
+          File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
       var url = 'http://example.com/image.png';
       httpMiracleMock.open(url).reply(data.readAsBytesSync());
       await Utils.pumpWidgetWithImages(
@@ -39,11 +40,11 @@ void main() async {
     });
 
     testWidgets('test image using header', (WidgetTester tester) async {
-      var data = File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
+      var data =
+          File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
       var url = 'http://example.com/image';
-      httpMiracleMock
-          .open(url)
-          .reply(data.readAsBytesSync(), headers: {Headers.contentTypeHeader: 'image/png'});
+      httpMiracleMock.open(url).reply(data.readAsBytesSync(),
+          headers: {Headers.contentTypeHeader: 'image/png'});
       await Utils.pumpWidgetWithImages(
         tester,
         Column(
@@ -129,17 +130,15 @@ void main() async {
   group('using dio', () {
     test('test method get', () async {
       var data = {"success": true};
-      httpMiracleMock
-          .open('http://example.com/111')
-          .reply(data, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open('http://example.com/111').reply(data,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
       var res = await Dio().get('http://example.com/111');
       expect(res.data, data);
     });
     test('test method post', () async {
       var data = {"success": true};
-      httpMiracleMock
-          .open('http://example.com/222')
-          .reply(data, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open('http://example.com/222').reply(data,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
       var res = await Dio().post('http://example.com/222');
       expect(res.data, data);
     });
@@ -164,7 +163,7 @@ void main() async {
       expect(res.data, data);
       expect(res1.data, data1);
     });
-     test('test Uri for url', () async {
+    test('test Uri for url', () async {
       var data = {"success": true};
       var url = 'http://example.com/go?action=testRegular';
       httpMiracleMock.open(Uri.parse(url)).reply(data);
@@ -187,12 +186,10 @@ void main() async {
       var data = {"success": true};
       var data1 = {"success1": false};
       var url = 'http://example.com/224';
-      httpMiracleMock
-          .open('$url?test=true')
-          .reply(data, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
-      httpMiracleMock
-          .open(url)
-          .reply(data1, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open('$url?test=true').reply(data,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open(url).reply(data1,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
       var res1 = await Dio().get(url);
       var res = await Dio().get(url, queryParameters: {"test": true});
       expect(res.data, data);
@@ -203,12 +200,10 @@ void main() async {
       var dataPost = {"success": true};
       var dataGet = {"success1": false};
       var url = 'http://example.com/222';
-      httpMiracleMock
-          .open(url, method: 'Get')
-          .reply(dataGet, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
-      httpMiracleMock
-          .open(url, method: 'Post')
-          .reply(dataPost, headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open(url, method: 'Get').reply(dataGet,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
+      httpMiracleMock.open(url, method: 'Post').reply(dataPost,
+          headers: {HttpHeaders.contentTypeHeader: ContentType.json.value});
       var resGet = await Dio().get(url);
       var resPost = await Dio().post(url);
       expect(resPost.data, dataPost);
@@ -224,7 +219,8 @@ void main() async {
       httpMiracleMock.open(url, data: requestData).reply(data);
       httpMiracleMock.open(url, data: requestDataNo).reply(dataNo);
       var res = await Dio().post(url, data: {...requestData, "hhh": "冲"});
-      var resNo = await Dio().post(url, data: {...requestDataNo, "token": "123"});
+      var resNo =
+          await Dio().post(url, data: {...requestDataNo, "token": "123"});
       //参数传递无法匹配时，报404
       try {
         var resError = await Dio().post(url, data: {"test1": false});
@@ -237,12 +233,14 @@ void main() async {
     });
 
     test('test POST data stream', () async {
-      var requestData = File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
+      var requestData =
+          File(path.join(Utils.currentPath, 'test', 'assets', 'test.png'));
       var data = {"success": true};
       List<int> bytes = requestData.readAsBytesSync();
       var url = 'http://example.com/dafade';
       httpMiracleMock.open(url, data: bytes).reply(data);
-      var res = await Dio().post(url, data: Stream<List<int>>.fromIterable([bytes]));
+      var res =
+          await Dio().post(url, data: Stream<List<int>>.fromIterable([bytes]));
       expect(res.data, data);
     });
     var dataTestUrl = 'http://example.com/xsf32x';
@@ -282,13 +280,16 @@ void main() async {
       var url = 'http://example.com/dsdfqe23?';
       httpMiracleMock.open(url, data: respectData).reply(data);
       var res = await Dio().post(url,
-          data: respectData, options: Options(contentType: Headers.formUrlEncodedContentType));
+          data: respectData,
+          options: Options(contentType: Headers.formUrlEncodedContentType));
       expect(res.data, data);
     });
     test('test dataTnsform', () async {
       var requestData = '{"test":"false"}';
       var realData = {"test": "true"};
-      httpMiracleMock.open(dataTestUrl, data: realData, dataTransform: (v) => realData).reply('1');
+      httpMiracleMock
+          .open(dataTestUrl, data: realData, dataTransform: (v) => realData)
+          .reply('1');
       var res = await Dio().post(dataTestUrl, data: requestData);
       expect(res.data, '1');
     });
@@ -310,7 +311,8 @@ void main() async {
       var data = """{"success": true}""";
       var uri = Uri.parse(url);
       httpMiracleMock.open(url, data: 'name=doodle&color=blue').reply(data);
-      var response = await http.post(uri, body: {'name': 'doodle', 'color': 'blue'});
+      var response =
+          await http.post(uri, body: {'name': 'doodle', 'color': 'blue'});
       expect(response.body, data);
     });
   });
